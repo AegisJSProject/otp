@@ -1,1 +1,14 @@
-export const MESSAGE = 'This is a template for npm projects.';
+export const SHA1 = 'SHA-1';
+export const SHA256 = 'SHA-256';
+export const SHA384 = 'SHA-384';
+export const SHA512 = 'SHA-512';
+export const DEFAULT_ALGO = SHA1;
+export const DEFAULT_DIGITS = 6;
+export const DEFAULT_PERIOD = 30;
+export const DEFAULT_SECRET_LENGTH = 20;
+export const DEFAULT_ALLOWED_SKEW = 1;
+export const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+export const TOTP = 'totp';
+export const HOTP = 'hotp';
+export const DEFAULT_TYPE = TOTP;
+export const SUPPORTED_TYPES = [TOTP, HOTP];
