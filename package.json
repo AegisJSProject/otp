@@ -1,16 +1,20 @@
 {
-  "name": "npm-template",
-  "version": "1.1.1",
-  "description": "A template repo for npm packages",
-  "keywords": [],
+  "name": "@aegisjsproject/otp",
+  "version": "1.0.0",
+  "description": "An OTP library written using the `crypto` API",
+  "keywords": [
+    "otp",
+    "totp",
+    "crypto"
+  ],
   "type": "module",
-  "main": "./index.cjs",
-  "module": "./index.js",
-  "unpkg": "./index.min.js",
+  "main": "./otp.cjs",
+  "module": "./otp.js",
+  "unpkg": "./otp.min.js",
   "exports": {
     ".": {
-      "import": "./index.js",
-      "require": "./index.cjs"
+      "import": "./otp.js",
+      "require": "./otp.cjs"
     },
     "./*.js": {
       "import": "./*.js",
@@ -51,7 +55,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shgysk8zer0/npm-template.git"
+    "url": "git+https://github.com/AegisJSProject/otp.git"
   },
   "author": "Chris Zuber <admin@kernvalley.us>",
   "license": "MIT",
@@ -66,13 +70,13 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/shgysk8zer0/npm-template/issues"
+    "url": "https://github.com/AegisJSProject/otp/issues"
   },
-  "homepage": "https://github.com/shgysk8zer0/npm-template#readme",
+  "homepage": "https://github.com/AegisJSProject/otp#readme",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "@shgysk8zer0/eslint-config": "^1.0.4",
-    "@shgysk8zer0/js-utils": "^1.0.2",
-    "@shgysk8zer0/npm-utils": "^1.1.3"
+    "eslint": "^9.24.0",
+    "rollup": "^4.40.0"
   }
 }
