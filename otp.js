@@ -1,6 +1,6 @@
 import {
 	DEFAULT_ALGO, DEFAULT_DIGITS, DEFAULT_PERIOD, DEFAULT_SECRET_LENGTH, DEFAULT_ALLOWED_SKEW,
-	TOTP, BASE32_ALPHABET, SUPPORTED_TYPES,
+	TOTP, BASE32_ALPHABET, SUPPORTED_TYPES, SHA1,
 } from './consts.js';
 
 /**
@@ -12,30 +12,89 @@ import {
 export const generateSecret = (length = DEFAULT_SECRET_LENGTH) => crypto.getRandomValues(new Uint8Array(length));
 
 /**
+ * Derives a cryptographic key from a password using the PBKDF2 algorithm.
+ *
+ * @param {string} password The password to derive the key from.
+ * @param {Uint8Array} salt A cryptographically random salt. Should be unique per password.
+ * @param {object} [options={}] Optional parameters for the key derivation.
+ * @param {number} [options.iterations=100_000] The number of iterations for PBKDF2. Higher numbers increase security but also computation time.
+ * @param {number} [options.length=160] The desired length of the derived key in bits. Defaults to 160, suitable for HMAC-SHA1.
+ * @param {HashAlgorithmIdentifier} [options.hash="SHA-1"] The hash algorithm to use within PBKDF2 and for the derived HMAC key. Standard string identifiers like "SHA-1", "SHA-256", etc.
+ * @param {boolean} [options.extractable=true] Whether the derived key can be exported.
+ * @returns {Promise<CryptoKey>} A promise that resolves with the derived CryptoKey.
+ */
+export async function deriveKeyFromPassword(password, salt, {
+	iterations = 100_000,
+	length = 160,
+	hash = SHA1,
+	extractable = true,
+} = {}) {
+	const baseKey = await crypto.subtle.importKey(
+		'raw',
+		new TextEncoder().encode(password),
+		{ name: 'PBKDF2' },
+		false,
+		['deriveKey']
+	);
+
+	return await crypto.subtle.deriveKey(
+		{
+			name: 'PBKDF2',
+			salt,
+			iterations,
+			hash,
+		},
+		baseKey,
+		{
+			name: 'HMAC',
+			hash,
+			length,
+		},
+		extractable,
+		['sign']
+	);
+}
+
+/**
  * Encodes a Uint8Array secret into a Base32 string (RFC 4648).
  *
- * @param {Uint8Array} bytes The secret bytes to encode.
+ * @param {Uint8Array|ArrayBuffer} bytes The secret bytes to encode.
  * @returns {string} The Base32 encoded representation of the secret.
  */
 export function base32Encode(bytes) {
-	let bits = '';
-	let output = '';
+	if (bytes instanceof ArrayBuffer) {
+		return base32Encode(new Uint8Array(bytes));
+	} else if (bytes instanceof Uint8Array) {
+		let bits = '';
+		let output = '';
 
-	for (const byte of bytes) {
-		bits += byte.toString(2).padStart(8, '0');
+		for (const byte of bytes) {
+			bits += byte.toString(2).padStart(8, '0');
 
-		while (bits.length >= 5) {
-			output += BASE32_ALPHABET[parseInt(bits.slice(0, 5), 2)];
-			bits = bits.slice(5);
+			while (bits.length >= 5) {
+				output += BASE32_ALPHABET[parseInt(bits.slice(0, 5), 2)];
+				bits = bits.slice(5);
+			}
 		}
-	}
 
-	if (bits.length > 0) {
-		output += BASE32_ALPHABET[parseInt(bits.padEnd(5, '0'), 2)];
-	}
+		if (bits.length > 0) {
+			output += BASE32_ALPHABET[parseInt(bits.padEnd(5, '0'), 2)];
+		}
 
-	return output;
+		return output;
+	} else {
+		throw new TypeError('Bytes must be an `ArrayBuffer` or `Uint8Array`.');
+	}
 }
+
+/**
+ * Exports a CryptoKey to its raw byte format and then encodes it as a Base32 string.
+ *
+ * @param {CryptoKey} key The CryptoKey to export and encode. The key must be extractable.
+ * @returns {Promise<string>} A promise that resolves with the Base32 encoded representation of the key's raw data.
+ * @throws {Error} If the key is not extractable or another export error occurs.
+ */
+export const base32EncodeKey = async key => base32Encode(await crypto.subtle.exportKey('raw', key));
 
 /**
  * Decodes a Base32 encoded string (RFC 4648) back into a Uint8Array.
