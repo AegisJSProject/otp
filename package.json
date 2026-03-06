@@ -74,7 +74,7 @@
   },
   "homepage": "https://github.com/AegisJSProject/otp#readme",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@shgysk8zer0/eslint-config": "^1.0.4",
     "eslint": "^10.0.0",
     "rollup": "^4.40.0"
