@@ -160,6 +160,24 @@ export async function secretToKey(secret, {
 }
 
 /**
+ * Exports a CryptoKey to a raw ArrayBuffer secret.
+ *
+ * @param {CryptoKey} key - The cryptographic key to export. Must be extractable and include 'sign' in its usages.
+ * @returns {Promise<ArrayBuffer>} A promise that resolves to the raw key material.
+ * @throws {TypeError} If the provided argument is not a CryptoKey.
+ * @throws {TypeError} If the key is not extractable or lacks the 'sign' usage.
+ */
+export async function keyToSecret(key) {
+	if (! (key instanceof CryptoKey)) {
+		throw new TypeError('Generating a secret requires a `CryptoKey`.');
+	} else if (! (key.extractable && key.usages.includes('sign'))) {
+		throw new TypeError('Key must be extractable and have "sign" usage.');
+	} else {
+		return await crypto.subtle.exportKey('raw', key);
+	}
+}
+
+/**
  * Creates an `otpauth://totp/` URI for easy provisioning of TOTP secrets in authenticator apps.
  *
  * @param {object} config Configuration options for the URI.

@@ -1,4 +1,6 @@
 node_modules/
+index.js
+index.html
 .github/
 .editorconfig
 .eslintignore

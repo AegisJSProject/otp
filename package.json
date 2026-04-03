@@ -38,6 +38,7 @@
   },
   "private": false,
   "scripts": {
+    "start": "http-server -c ./http.config.js",
     "test": "npm run lint:js && npm run run:tests",
     "preversion": "npm test && npm run build",
     "prepare": "npm test && npm run build",
@@ -74,9 +75,12 @@
   },
   "homepage": "https://github.com/AegisJSProject/otp#readme",
   "devDependencies": {
+    "@aegisjsproject/dev-server": "^1.0.6",
+    "@aegisjsproject/http-utils": "^1.0.4",
     "@rollup/plugin-terser": "^1.0.0",
-    "@shgysk8zer0/eslint-config": "^1.0.4",
-    "eslint": "^10.0.0",
-    "rollup": "^4.40.0"
+    "@shgysk8zer0/eslint-config": "^1.0.9",
+    "@shgysk8zer0/importmap": "^1.8.11",
+    "eslint": "^10.1.0",
+    "rollup": "^4.60.1"
   }
 }
